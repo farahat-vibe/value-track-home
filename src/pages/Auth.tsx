@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,7 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/components/ui/use-toast";
 import { Logo } from "@/components/common/Logo";
-import { Mail, Lock, LoaderCircle, GitHub } from "lucide-react";
+import { Mail, Lock, LoaderCircle, Github } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
