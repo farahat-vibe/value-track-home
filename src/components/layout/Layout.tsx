@@ -4,7 +4,7 @@ import { AppSidebar } from "./AppSidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { ReactNode } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Bell, Moon, Settings, User } from "lucide-react";
+import { Bell, LogOut, Moon, Settings, Sun, User } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,6 +14,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/providers/AuthProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 
 interface LayoutProps {
   children: ReactNode;
@@ -21,6 +23,21 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const isMobile = useIsMobile();
+  const { user, signOut } = useAuth();
+  const { theme, setTheme } = useTheme();
+
+  const getInitials = () => {
+    if (!user?.email) return "?";
+    return user.email.substring(0, 2).toUpperCase();
+  };
+
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  const toggleTheme = () => {
+    setTheme(theme === "dark" ? "light" : "dark");
+  };
 
   return (
     <div className="min-h-screen flex w-full">
@@ -39,16 +56,16 @@ const Layout = ({ children }: LayoutProps) => {
                 <span className="absolute top-0.5 right-0.5 h-3 w-3 bg-destructive rounded-full border-2 border-background"></span>
               </Button>
               
-              <Button variant="ghost" size="icon">
-                <Moon className="h-5 w-5" />
+              <Button variant="ghost" size="icon" onClick={toggleTheme}>
+                {theme === "dark" ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
               </Button>
               
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="relative h-9 w-9 rounded-full">
                     <Avatar className="h-9 w-9">
-                      <AvatarImage src="/placeholder.svg" alt="User" />
-                      <AvatarFallback className="bg-primary text-white">JD</AvatarFallback>
+                      <AvatarImage src={user?.user_metadata?.avatar_url || "/placeholder.svg"} alt={user?.email || "User"} />
+                      <AvatarFallback className="bg-primary text-primary-foreground">{getInitials()}</AvatarFallback>
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
@@ -64,7 +81,8 @@ const Layout = ({ children }: LayoutProps) => {
                     <span>Settings</span>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    <LogOut className="mr-2 h-4 w-4" />
                     <span>Log out</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>

@@ -7,24 +7,37 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import NotFound from "./pages/NotFound";
 import { SidebarProvider } from "./components/ui/sidebar";
-import Layout from "./components/layout/Layout";
+import Auth from "./pages/Auth";
+import { AuthProvider } from "./providers/AuthProvider";
+import { PrivateRoute } from "./components/auth/PrivateRoute";
+import { PublicRoute } from "./components/auth/PublicRoute";
+import { ThemeProvider } from "./providers/ThemeProvider";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <SidebarProvider>
+      <ThemeProvider defaultTheme="light">
+        <Toaster />
+        <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Layout><Dashboard /></Layout>} />
-            {/* Additional routes will be added here */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <AuthProvider>
+            <SidebarProvider>
+              <Routes>
+                <Route element={<PublicRoute />}>
+                  <Route path="/auth" element={<Auth />} />
+                </Route>
+                <Route element={<PrivateRoute />}>
+                  <Route path="/" element={<Dashboard />} />
+                  {/* Additional protected routes will be added here */}
+                </Route>
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </SidebarProvider>
+          </AuthProvider>
         </BrowserRouter>
-      </SidebarProvider>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
