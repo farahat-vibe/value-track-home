@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, ArrowDown } from "lucide-react";
+import { Calendar, TrendingDown } from "lucide-react";
 
 type UpcomingTransaction = {
   id: number;
@@ -56,8 +56,8 @@ export function UpcomingTransactions() {
               className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0"
             >
               <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-expense-light flex items-center justify-center mr-3">
-                  <ArrowDown className="h-5 w-5 text-expense" />
+                <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                  <TrendingDown className="h-5 w-5 text-red-500" />
                 </div>
                 <div>
                   <p className="font-medium">{transaction.description}</p>
@@ -70,10 +70,10 @@ export function UpcomingTransactions() {
                 </div>
               </div>
               <div className="text-right">
-                <p className="font-medium text-expense">
+                <p className="font-medium text-red-500">
                   -${transaction.amount.toFixed(2)}
                 </p>
-                <Badge className={`text-xs mt-1 ${transaction.daysLeft <= 3 ? 'bg-expense/20 text-expense hover:bg-expense/30' : ''}`}>
+                <Badge className={`text-xs mt-1 ${transaction.daysLeft <= 3 ? 'bg-red-100 text-red-500 hover:bg-red-200' : ''}`}>
                   {transaction.daysLeft === 1 ? 'Tomorrow' : `${transaction.daysLeft} days`}
                 </Badge>
               </div>

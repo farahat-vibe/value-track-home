@@ -10,42 +10,38 @@ import {
   SidebarMenuItem,
   SidebarHeader,
   SidebarFooter,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
 import {
-  Home,
-  CreditCard,
-  BarChart,
+  LayoutDashboard,
+  Wallet,
+  TrendingUp,
+  TrendingDown,
   Calendar,
+  BarChart2,
   Settings,
-  PlusCircle
+  PlusCircle,
+  Bell,
+  ChevronDown,
+  LineChart,
+  PieChart,
+  Inbox,
+  Outbox,
+  CreditCard,
+  Landmark,
+  Receipt,
+  Repeat
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-// Menu items
-const mainNavItems = [
-  {
-    title: "Dashboard",
-    url: "/",
-    icon: Home,
-  },
-  {
-    title: "Accounts",
-    url: "/accounts",
-    icon: CreditCard,
-  },
-  {
-    title: "Reports",
-    url: "/reports",
-    icon: BarChart,
-  },
-  {
-    title: "Budget",
-    url: "/budget",
-    icon: Calendar,
-  },
-];
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { useState } from "react";
 
 export function AppSidebar() {
+  const [expensesOpen, setExpensesOpen] = useState(false);
+  const [reportsOpen, setReportsOpen] = useState(false);
+
   return (
     <Sidebar>
       <SidebarHeader>
@@ -55,19 +51,125 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupLabel>Main Navigation</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNavItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <a href={item.url} className="flex items-center">
-                      <item.icon className="mr-3 h-4 w-4" />
-                      <span>{item.title}</span>
-                    </a>
-                  </SidebarMenuButton>
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="/" className="flex items-center">
+                    <LayoutDashboard className="mr-3 h-4 w-4" />
+                    <span>Dashboard</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="/accounts" className="flex items-center">
+                    <Wallet className="mr-3 h-4 w-4" />
+                    <span>Accounts</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="/income" className="flex items-center">
+                    <TrendingUp className="mr-3 h-4 w-4" />
+                    <span>Income</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <Collapsible open={expensesOpen} onOpenChange={setExpensesOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center">
+                        <TrendingDown className="mr-3 h-4 w-4" />
+                        <span>Expenses</span>
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${expensesOpen ? "rotate-180" : ""}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
                 </SidebarMenuItem>
-              ))}
+                
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <a href="/expenses/purchases">
+                          <Receipt className="mr-2 h-3.5 w-3.5" />
+                          <span>Purchases</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <a href="/expenses/bills">
+                          <CreditCard className="mr-2 h-3.5 w-3.5" />
+                          <span>Bills</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <a href="/expenses/subscriptions">
+                          <Repeat className="mr-2 h-3.5 w-3.5" />
+                          <span>Subscriptions</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </Collapsible>
+
+              <SidebarMenuItem>
+                <SidebarMenuButton asChild>
+                  <a href="/budgets" className="flex items-center">
+                    <Calendar className="mr-3 h-4 w-4" />
+                    <span>Budgets</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+
+              <Collapsible open={reportsOpen} onOpenChange={setReportsOpen}>
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton className="w-full justify-between">
+                      <div className="flex items-center">
+                        <BarChart2 className="mr-3 h-4 w-4" />
+                        <span>Reports</span>
+                      </div>
+                      <ChevronDown className={`h-4 w-4 transition-transform ${reportsOpen ? "rotate-180" : ""}`} />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                </SidebarMenuItem>
+                
+                <CollapsibleContent>
+                  <SidebarMenuSub>
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <a href="/reports/overview">
+                          <LineChart className="mr-2 h-3.5 w-3.5" />
+                          <span>Overview</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                    
+                    <SidebarMenuSubItem>
+                      <SidebarMenuSubButton asChild>
+                        <a href="/reports/categories">
+                          <PieChart className="mr-2 h-3.5 w-3.5" />
+                          <span>Categories</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
+                  </SidebarMenuSub>
+                </CollapsibleContent>
+              </Collapsible>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -81,6 +183,15 @@ export function AppSidebar() {
       <SidebarFooter>
         <SidebarGroup>
           <SidebarMenu>
+            <SidebarMenuItem>
+              <SidebarMenuButton asChild>
+                <a href="/notifications" className="flex items-center">
+                  <Bell className="mr-3 h-4 w-4" />
+                  <span>Notifications</span>
+                  <span className="ml-auto bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                </a>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
                 <a href="/settings" className="flex items-center">

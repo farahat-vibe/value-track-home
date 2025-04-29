@@ -1,7 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowUp, ArrowDown } from "lucide-react";
+import { TrendingUp, TrendingDown } from "lucide-react";
 
 type Transaction = {
   id: number;
@@ -60,12 +60,9 @@ export function TransactionsList() {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between pb-2">
         <CardTitle>Recent Transactions</CardTitle>
-        <a 
-          href="#" 
-          className="text-sm text-primary hover:underline"
-        >
+        <button className="text-sm text-primary hover:underline">
           View All
-        </a>
+        </button>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -76,12 +73,12 @@ export function TransactionsList() {
             >
               <div className="flex items-center">
                 <div className={`h-10 w-10 rounded-full flex items-center justify-center mr-3 ${
-                  transaction.type === "income" ? "bg-income-light" : "bg-expense-light"
+                  transaction.type === "income" ? "bg-green-100" : "bg-red-100"
                 }`}>
                   {transaction.type === "income" ? (
-                    <ArrowUp className="h-5 w-5 text-income" />
+                    <TrendingUp className="h-5 w-5 text-green-500" />
                   ) : (
-                    <ArrowDown className="h-5 w-5 text-expense" />
+                    <TrendingDown className="h-5 w-5 text-red-500" />
                   )}
                 </div>
                 <div>
@@ -96,8 +93,8 @@ export function TransactionsList() {
               </div>
               <p className={`font-medium ${
                 transaction.type === "income" 
-                  ? "text-income" 
-                  : "text-expense"
+                  ? "text-green-500" 
+                  : "text-red-500"
               }`}>
                 {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
               </p>

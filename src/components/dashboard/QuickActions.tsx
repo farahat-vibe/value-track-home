@@ -1,9 +1,14 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, ArrowUp, ArrowDown, Calendar } from "lucide-react";
+import { TrendingUp, TrendingDown, Calendar, Plus } from "lucide-react";
 
 export function QuickActions() {
+  const handleAddIncome = () => console.log("Add income clicked");
+  const handleAddExpense = () => console.log("Add expense clicked");
+  const handleCreateBudget = () => console.log("Create budget clicked");
+  const handleNewAccount = () => console.log("New account clicked");
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -11,22 +16,36 @@ export function QuickActions() {
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-4">
-          <Button className="w-full flex items-center justify-start gap-2 bg-income hover:bg-income/90">
-            <ArrowUp className="h-4 w-4" />
+          <Button 
+            className="w-full flex items-center justify-start gap-2 bg-green-500 hover:bg-green-600"
+            onClick={handleAddIncome}
+          >
+            <TrendingUp className="h-4 w-4" />
             Add Income
           </Button>
           
-          <Button className="w-full flex items-center justify-start gap-2 bg-expense hover:bg-expense/90">
-            <ArrowDown className="h-4 w-4" />
+          <Button 
+            className="w-full flex items-center justify-start gap-2 bg-red-500 hover:bg-red-600"
+            onClick={handleAddExpense}
+          >
+            <TrendingDown className="h-4 w-4" />
             Add Expense
           </Button>
 
-          <Button className="w-full flex items-center justify-start gap-2" variant="outline">
+          <Button 
+            className="w-full flex items-center justify-start gap-2" 
+            variant="outline"
+            onClick={handleCreateBudget}
+          >
             <Calendar className="h-4 w-4" />
             Create Budget
           </Button>
 
-          <Button className="w-full flex items-center justify-start gap-2" variant="secondary">
+          <Button 
+            className="w-full flex items-center justify-start gap-2" 
+            variant="secondary"
+            onClick={handleNewAccount}
+          >
             <Plus className="h-4 w-4" />
             New Account
           </Button>
