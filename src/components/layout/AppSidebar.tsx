@@ -28,7 +28,7 @@ import {
   LineChart,
   PieChart,
   Inbox,
-  Outbox,
+  Send,  // Changed from Outbox to Send which is available
   CreditCard,
   Landmark,
   Receipt,
