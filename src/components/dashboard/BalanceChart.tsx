@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
   ResponsiveContainer, 
@@ -58,20 +57,20 @@ export function BalanceChart() {
               <Line
                 type="monotone"
                 dataKey="Income"
-                stroke="#10b981"
+                stroke="hsl(var(--primary))"
                 activeDot={{ r: 8 }}
                 strokeWidth={2}
               />
               <Line
                 type="monotone"
                 dataKey="Expenses"
-                stroke="#ef4444"
+                stroke="hsl(var(--muted))"
                 strokeWidth={2}
               />
               <Line
                 type="monotone"
                 dataKey="Balance"
-                stroke="#6366f1"
+                stroke="hsl(var(--accent))"
                 strokeWidth={2}
               />
             </LineChart>

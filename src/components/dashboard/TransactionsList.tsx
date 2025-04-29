@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown } from "lucide-react";
@@ -73,12 +72,12 @@ export function TransactionsList() {
             >
               <div className="flex items-center">
                 <div className={`h-10 w-10 rounded-full flex items-center justify-center mr-3 ${
-                  transaction.type === "income" ? "bg-green-100" : "bg-red-100"
+                  transaction.type === "income" ? "bg-accent/20" : "bg-muted"
                 }`}>
                   {transaction.type === "income" ? (
-                    <TrendingUp className="h-5 w-5 text-green-500" />
+                    <TrendingUp className="h-5 w-5 text-accent" />
                   ) : (
-                    <TrendingDown className="h-5 w-5 text-red-500" />
+                    <TrendingDown className="h-5 w-5 text-muted-foreground" />
                   )}
                 </div>
                 <div>
@@ -93,8 +92,8 @@ export function TransactionsList() {
               </div>
               <p className={`font-medium ${
                 transaction.type === "income" 
-                  ? "text-green-500" 
-                  : "text-red-500"
+                  ? "text-accent" 
+                  : "text-muted-foreground"
               }`}>
                 {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
               </p>

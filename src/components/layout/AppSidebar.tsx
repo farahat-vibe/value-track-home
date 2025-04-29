@@ -1,4 +1,3 @@
-
 import {
   Sidebar,
   SidebarContent,
@@ -188,7 +187,7 @@ export function AppSidebar() {
                 <a href="/notifications" className="flex items-center">
                   <Bell className="mr-3 h-4 w-4" />
                   <span>Notifications</span>
-                  <span className="ml-auto bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
+                  <span className="ml-auto bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
                 </a>
               </SidebarMenuButton>
             </SidebarMenuItem>

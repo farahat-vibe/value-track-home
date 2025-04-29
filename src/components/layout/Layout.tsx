@@ -1,4 +1,3 @@
-
 import { useIsMobile } from "@/hooks/use-mobile";
 import { AppSidebar } from "./AppSidebar";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -53,7 +52,7 @@ const Layout = ({ children }: LayoutProps) => {
             <div className="flex items-center gap-2">
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <span className="absolute top-0.5 right-0.5 h-3 w-3 bg-destructive rounded-full border-2 border-background"></span>
+                <span className="absolute top-0.5 right-0.5 h-3 w-3 bg-accent rounded-full border-2 border-background"></span>
               </Button>
               
               <Button variant="ghost" size="icon" onClick={toggleTheme}>
