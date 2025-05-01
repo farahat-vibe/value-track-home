@@ -1,3 +1,4 @@
+
 import {
   Sidebar,
   SidebarContent,
@@ -27,7 +28,7 @@ import {
   LineChart,
   PieChart,
   Inbox,
-  Send,  // Changed from Outbox to Send which is available
+  Send,
   CreditCard,
   Landmark,
   Receipt,
@@ -36,6 +37,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 export function AppSidebar() {
   const [expensesOpen, setExpensesOpen] = useState(false);
@@ -55,28 +57,28 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/" className="flex items-center">
+                  <Link to="/" className="flex items-center">
                     <LayoutDashboard className="mr-3 h-4 w-4" />
                     <span>Dashboard</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/accounts" className="flex items-center">
+                  <Link to="/accounts" className="flex items-center">
                     <Wallet className="mr-3 h-4 w-4" />
                     <span>Accounts</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/income" className="flex items-center">
+                  <Link to="/income" className="flex items-center">
                     <TrendingUp className="mr-3 h-4 w-4" />
                     <span>Income</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -97,28 +99,28 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <a href="/expenses/purchases">
+                        <Link to="/expenses/purchases">
                           <Receipt className="mr-2 h-3.5 w-3.5" />
                           <span>Purchases</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <a href="/expenses/bills">
+                        <Link to="/expenses/bills">
                           <CreditCard className="mr-2 h-3.5 w-3.5" />
                           <span>Bills</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <a href="/expenses/subscriptions">
+                        <Link to="/expenses/subscriptions">
                           <Repeat className="mr-2 h-3.5 w-3.5" />
                           <span>Subscriptions</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   </SidebarMenuSub>
@@ -127,10 +129,10 @@ export function AppSidebar() {
 
               <SidebarMenuItem>
                 <SidebarMenuButton asChild>
-                  <a href="/budgets" className="flex items-center">
+                  <Link to="/budgets" className="flex items-center">
                     <Calendar className="mr-3 h-4 w-4" />
                     <span>Budgets</span>
-                  </a>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
 
@@ -151,19 +153,19 @@ export function AppSidebar() {
                   <SidebarMenuSub>
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <a href="/reports/overview">
+                        <Link to="/reports/overview">
                           <LineChart className="mr-2 h-3.5 w-3.5" />
                           <span>Overview</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                     
                     <SidebarMenuSubItem>
                       <SidebarMenuSubButton asChild>
-                        <a href="/reports/categories">
+                        <Link to="/reports/categories">
                           <PieChart className="mr-2 h-3.5 w-3.5" />
                           <span>Categories</span>
-                        </a>
+                        </Link>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>
                   </SidebarMenuSub>
@@ -184,19 +186,19 @@ export function AppSidebar() {
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <a href="/notifications" className="flex items-center">
+                <Link to="/notifications" className="flex items-center">
                   <Bell className="mr-3 h-4 w-4" />
                   <span>Notifications</span>
                   <span className="ml-auto bg-accent text-accent-foreground text-xs rounded-full h-5 w-5 flex items-center justify-center">3</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
             <SidebarMenuItem>
               <SidebarMenuButton asChild>
-                <a href="/settings" className="flex items-center">
+                <Link to="/settings" className="flex items-center">
                   <Settings className="mr-3 h-4 w-4" />
                   <span>Settings</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
