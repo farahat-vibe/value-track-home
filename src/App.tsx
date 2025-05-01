@@ -5,6 +5,9 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
+import Accounts from "./pages/Accounts";
+import Income from "./pages/Income";
+import Expenses from "./pages/Expenses";
 import NotFound from "./pages/NotFound";
 import { SidebarProvider } from "./components/ui/sidebar";
 import Auth from "./pages/Auth";
@@ -30,7 +33,9 @@ const App = () => (
                 </Route>
                 <Route element={<PrivateRoute />}>
                   <Route path="/" element={<Dashboard />} />
-                  {/* Additional protected routes will be added here */}
+                  <Route path="/accounts" element={<Accounts />} />
+                  <Route path="/income" element={<Income />} />
+                  <Route path="/expenses" element={<Expenses />} />
                 </Route>
                 <Route path="*" element={<NotFound />} />
               </Routes>
