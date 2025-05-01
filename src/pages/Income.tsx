@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Card,
@@ -45,7 +44,7 @@ const Income = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [filter, setFilter] = useState<string | undefined>();
   
-  const [newIncome, setNewIncome] = useState<NewTransaction>({
+  const [newIncome, setNewIncome] = useState<Omit<NewTransaction, 'user_id'>>({
     amount: 0,
     description: "",
     category: "Salary",

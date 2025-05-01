@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import {
   Card,
@@ -51,7 +50,7 @@ const Expenses = () => {
   const [date, setDate] = useState<Date>();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   
-  const [newExpense, setNewExpense] = useState<NewTransaction>({
+  const [newExpense, setNewExpense] = useState<Omit<NewTransaction, 'user_id'>>({
     amount: 0,
     description: "",
     category: "Purchases",

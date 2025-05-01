@@ -40,13 +40,14 @@ import {
 import { useAccounts } from "@/hooks/useAccounts";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { NewAccount } from "@/services/accountService";
+import { supabase } from "@/integrations/supabase/client";
 
 const Accounts = () => {
   const { accounts, createAccount, updateAccount, deleteAccount } = useAccounts();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentAccountId, setCurrentAccountId] = useState<string | null>(null);
-  const [newAccount, setNewAccount] = useState<NewAccount>({ 
+  const [newAccount, setNewAccount] = useState<Omit<NewAccount, 'user_id'>>({ 
     name: "", 
     type: "bank", 
     balance: 0 
