@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Accounts from "./pages/Accounts";
 import Income from "./pages/Income";
 import Expenses from "./pages/Expenses";
+import Budgets from "./pages/Budgets";
 import NotFound from "./pages/NotFound";
 import { SidebarProvider } from "./components/ui/sidebar";
 import Auth from "./pages/Auth";
@@ -16,7 +17,14 @@ import { PrivateRoute } from "./components/auth/PrivateRoute";
 import { PublicRoute } from "./components/auth/PublicRoute";
 import { ThemeProvider } from "./providers/ThemeProvider";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
@@ -39,7 +47,7 @@ const App = () => (
                   <Route path="/expenses/purchases" element={<Expenses />} />
                   <Route path="/expenses/bills" element={<Expenses />} />
                   <Route path="/expenses/subscriptions" element={<Expenses />} />
-                  <Route path="/budgets" element={<NotFound />} />
+                  <Route path="/budgets" element={<Budgets />} />
                   <Route path="/reports/overview" element={<NotFound />} />
                   <Route path="/reports/categories" element={<NotFound />} />
                   <Route path="/notifications" element={<NotFound />} />

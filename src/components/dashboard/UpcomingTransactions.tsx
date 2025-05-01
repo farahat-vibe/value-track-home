@@ -1,84 +1,76 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Calendar, TrendingDown } from "lucide-react";
 
-type UpcomingTransaction = {
-  id: number;
-  description: string;
-  amount: number;
-  date: string;
-  category: string;
-  daysLeft: number;
-};
-
-const upcomingTransactions: UpcomingTransaction[] = [
-  {
-    id: 1,
-    description: "Rent Payment",
-    amount: 1800,
-    date: "May 1, 2025",
-    category: "Housing",
-    daysLeft: 2,
-  },
-  {
-    id: 2,
-    description: "Internet Bill",
-    amount: 79.99,
-    date: "May 5, 2025",
-    category: "Utilities",
-    daysLeft: 6,
-  },
-  {
-    id: 3,
-    description: "Car Insurance",
-    amount: 145.5,
-    date: "May 10, 2025",
-    category: "Insurance",
-    daysLeft: 11,
-  },
-];
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { AlertCircle, CalendarIcon, Loader2 } from "lucide-react";
+import { useTransactions } from "@/hooks/useTransactions";
+import { format, addDays } from "date-fns";
 
 export function UpcomingTransactions() {
+  // Get recurring transactions that are due in the next 7 days
+  const today = new Date();
+  const nextWeek = addDays(today, 7);
+  
+  const startDate = today.toISOString().split('T')[0];
+  const endDate = nextWeek.toISOString().split('T')[0];
+  
+  const { transactions } = useTransactions({
+    start_date: startDate,
+    end_date: endDate
+  });
+  
+  // Filter for recurring transactions
+  const upcomingTransactions = transactions.data ? 
+    transactions.data
+      .filter(transaction => transaction.is_recurring)
+      .sort((a, b) => new Date(a.transaction_date).getTime() - new Date(b.transaction_date).getTime())
+      .slice(0, 5) : [];
+  
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          Upcoming Expenses
+          <CalendarIcon className="h-5 w-5" />
+          Upcoming Transactions
         </CardTitle>
+        <CardDescription>Due in the next 7 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {upcomingTransactions.map((transaction) => (
-            <div 
-              key={transaction.id} 
-              className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0"
-            >
-              <div className="flex items-center">
-                <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center mr-3">
-                  <TrendingDown className="h-5 w-5 text-muted-foreground" />
-                </div>
-                <div>
-                  <p className="font-medium">{transaction.description}</p>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-xs text-muted-foreground">{transaction.date}</p>
-                    <Badge variant="outline" className="text-xs">
-                      {transaction.category}
-                    </Badge>
-                  </div>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-medium text-muted-foreground">
-                  -${transaction.amount.toFixed(2)}
-                </p>
-                <Badge variant={transaction.daysLeft <= 3 ? "destructive" : "secondary"} className="text-xs mt-1">
-                  {transaction.daysLeft === 1 ? 'Tomorrow' : `${transaction.daysLeft} days`}
-                </Badge>
-              </div>
+        {transactions.isLoading ? (
+          <div className="flex justify-center py-8">
+            <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+          </div>
+        ) : upcomingTransactions.length === 0 ? (
+          <div className="py-6 text-center">
+            <div className="flex justify-center mb-3">
+              <AlertCircle className="h-10 w-10 text-muted-foreground" />
             </div>
-          ))}
-        </div>
+            <p className="text-muted-foreground">No upcoming transactions</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {upcomingTransactions.map((transaction) => (
+              <div key={transaction.id} className="flex items-center gap-4">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
+                  <span className="text-lg font-medium">
+                    {format(new Date(transaction.transaction_date), "dd")}
+                  </span>
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium">{transaction.description}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(transaction.transaction_date), "EEEE, MMM dd")}
+                  </p>
+                </div>
+                <div className={`text-sm font-medium ${
+                  transaction.transaction_type === "income" 
+                    ? "text-green-600 dark:text-green-400" 
+                    : "text-red-600 dark:text-red-400"
+                }`}>
+                  {transaction.transaction_type === "income" ? "+" : "-"}${Number(transaction.amount).toFixed(2)}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </CardContent>
     </Card>
   );

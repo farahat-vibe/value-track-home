@@ -27,7 +27,8 @@ import {
   Plus, 
   Trash, 
   PenLine,
-  ChevronRight
+  ChevronRight,
+  Loader2
 } from "lucide-react";
 import {
   Select,
@@ -36,45 +37,63 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/components/ui/use-toast";
-
-// Mock data for accounts - to be replaced with Supabase data
-const mockAccounts = [
-  { id: 1, name: "Cash Wallet", type: "cash", balance: 350.75 },
-  { id: 2, name: "Chase Bank", type: "bank", balance: 2540.33 },
-  { id: 3, name: "Visa Credit", type: "credit", balance: -450.25 },
-  { id: 4, name: "PayPal", type: "other", balance: 120.00 },
-];
+import { useAccounts } from "@/hooks/useAccounts";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { NewAccount } from "@/services/accountService";
 
 const Accounts = () => {
-  const [accounts, setAccounts] = useState(mockAccounts);
-  const [newAccount, setNewAccount] = useState({ name: "", type: "bank", initialBalance: 0 });
-  const { toast } = useToast();
+  const { accounts, createAccount, updateAccount, deleteAccount } = useAccounts();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [currentAccountId, setCurrentAccountId] = useState<string | null>(null);
+  const [newAccount, setNewAccount] = useState<NewAccount>({ 
+    name: "", 
+    type: "bank", 
+    balance: 0 
+  });
 
-  const handleAddAccount = () => {
+  const handleSubmit = async () => {
     if (!newAccount.name) {
-      toast({
-        title: "Error",
-        description: "Please enter an account name",
-        variant: "destructive",
-      });
       return;
     }
 
-    const account = {
-      id: accounts.length + 1,
-      name: newAccount.name,
-      type: newAccount.type,
-      balance: newAccount.initialBalance,
-    };
-
-    setAccounts([...accounts, account]);
-    setNewAccount({ name: "", type: "bank", initialBalance: 0 });
+    if (isEditMode && currentAccountId) {
+      await updateAccount.mutateAsync({ 
+        id: currentAccountId, 
+        updates: newAccount 
+      });
+    } else {
+      await createAccount.mutateAsync(newAccount);
+    }
     
-    toast({
-      title: "Account created",
-      description: `${account.name} has been added successfully.`,
+    setIsDialogOpen(false);
+    resetForm();
+  };
+
+  const handleEdit = (account: any) => {
+    setCurrentAccountId(account.id);
+    setNewAccount({
+      name: account.name,
+      type: account.type,
+      balance: account.balance
     });
+    setIsEditMode(true);
+    setIsDialogOpen(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    await deleteAccount.mutateAsync(id);
+  };
+
+  const resetForm = () => {
+    setNewAccount({ name: "", type: "bank", balance: 0 });
+    setIsEditMode(false);
+    setCurrentAccountId(null);
+  };
+
+  const openNewAccountDialog = () => {
+    resetForm();
+    setIsDialogOpen(true);
   };
 
   const getAccountIcon = (type: string) => {
@@ -103,76 +122,16 @@ const Accounts = () => {
     }
   };
 
-  const totalBalance = accounts.reduce((sum, account) => sum + account.balance, 0);
+  const totalBalance = accounts.data?.reduce((sum, account) => sum + Number(account.balance), 0) || 0;
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Accounts</h1>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button className="flex items-center gap-2">
-              <Plus className="h-4 w-4" />
-              New Account
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create new account</DialogTitle>
-              <DialogDescription>
-                Add a new account to track your finances.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="name" className="text-right">
-                  Name
-                </Label>
-                <Input
-                  id="name"
-                  value={newAccount.name}
-                  onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
-                  className="col-span-3"
-                  placeholder="e.g., Chase Bank Account"
-                />
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="type" className="text-right">
-                  Type
-                </Label>
-                <Select 
-                  value={newAccount.type}
-                  onValueChange={(value) => setNewAccount({ ...newAccount, type: value })}
-                >
-                  <SelectTrigger className="col-span-3">
-                    <SelectValue placeholder="Select account type" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="bank">Bank</SelectItem>
-                    <SelectItem value="cash">Cash</SelectItem>
-                    <SelectItem value="credit">Credit Card</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid grid-cols-4 items-center gap-4">
-                <Label htmlFor="balance" className="text-right">
-                  Initial Balance
-                </Label>
-                <Input
-                  id="balance"
-                  type="number"
-                  value={newAccount.initialBalance}
-                  onChange={(e) => setNewAccount({ ...newAccount, initialBalance: parseFloat(e.target.value) || 0 })}
-                  className="col-span-3"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button onClick={handleAddAccount}>Create Account</Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <Button className="flex items-center gap-2" onClick={openNewAccountDialog}>
+          <Plus className="h-4 w-4" />
+          New Account
+        </Button>
       </div>
 
       <Card>
@@ -187,46 +146,171 @@ const Accounts = () => {
         </CardContent>
       </Card>
 
-      <div className="grid gap-4 md:grid-cols-2">
-        {accounts.map((account) => (
-          <Card key={account.id} className="overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <div className="flex items-center space-x-2">
-                <div className={`p-2 rounded-md ${getAccountColor(account.type)}`}>
-                  {getAccountIcon(account.type)}
+      {accounts.isLoading ? (
+        <div className="flex justify-center items-center py-10">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : accounts.isError ? (
+        <Card className="p-6">
+          <p className="text-center text-red-500">
+            Error loading accounts: {accounts.error?.message || "Unknown error"}
+          </p>
+        </Card>
+      ) : accounts.data?.length === 0 ? (
+        <Card className="p-6">
+          <p className="text-center text-muted-foreground">
+            You don't have any accounts yet. Create one to get started.
+          </p>
+        </Card>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2">
+          {accounts.data?.map((account) => (
+            <Card key={account.id} className="overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="flex items-center space-x-2">
+                  <div className={`p-2 rounded-md ${getAccountColor(account.type)}`}>
+                    {getAccountIcon(account.type)}
+                  </div>
+                  <div>
+                    <CardTitle className="text-sm font-medium">
+                      {account.name}
+                    </CardTitle>
+                    <CardDescription>
+                      {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
+                    </CardDescription>
+                  </div>
                 </div>
-                <div>
-                  <CardTitle className="text-sm font-medium">
-                    {account.name}
-                  </CardTitle>
-                  <CardDescription>
-                    {account.type.charAt(0).toUpperCase() + account.type.slice(1)}
-                  </CardDescription>
+                <div className="flex items-center space-x-2">
+                  <Button variant="ghost" size="sm" className="h-8 w-8 p-0"
+                    onClick={() => handleEdit(account)}
+                  >
+                    <PenLine className="h-4 w-4" />
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                        <Trash className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Delete Account</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Are you sure you want to delete this account? This action cannot be undone.
+                          All transactions associated with this account will also be deleted.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction 
+                          className="bg-red-500 hover:bg-red-600"
+                          onClick={() => handleDelete(account.id)}
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
-              </div>
-              <div className="flex items-center space-x-2">
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  ${Number(account.balance).toFixed(2)}
+                </div>
+              </CardContent>
+              <CardFooter className="flex justify-between p-2 bg-muted/50">
+                <span className="text-sm text-muted-foreground">
+                  Last updated: {new Date(account.updated_at).toLocaleDateString()}
+                </span>
                 <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <PenLine className="h-4 w-4" />
+                  <ChevronRight className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                  <Trash className="h-4 w-4" />
-                </Button>
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{isEditMode ? "Edit account" : "Create new account"}</DialogTitle>
+            <DialogDescription>
+              {isEditMode 
+                ? "Update your account details." 
+                : "Add a new account to track your finances."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="name" className="text-right">
+                Name
+              </Label>
+              <Input
+                id="name"
+                value={newAccount.name}
+                onChange={(e) => setNewAccount({ ...newAccount, name: e.target.value })}
+                className="col-span-3"
+                placeholder="e.g., Chase Bank Account"
+              />
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="type" className="text-right">
+                Type
+              </Label>
+              <Select 
+                value={newAccount.type}
+                onValueChange={(value: 'cash' | 'bank' | 'credit' | 'other') => 
+                  setNewAccount({ ...newAccount, type: value })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Select account type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="bank">Bank</SelectItem>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="credit">Credit Card</SelectItem>
+                  <SelectItem value="other">Other</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label htmlFor="balance" className="text-right">
+                {isEditMode ? "Balance" : "Initial Balance"}
+              </Label>
+              <div className="col-span-3 relative">
+                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-muted-foreground">
+                  $
+                </span>
+                <Input
+                  id="balance"
+                  type="number"
+                  step="0.01"
+                  value={newAccount.balance}
+                  onChange={(e) => setNewAccount({ 
+                    ...newAccount, 
+                    balance: parseFloat(e.target.value) || 0 
+                  })}
+                  className="pl-7"
+                />
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                ${account.balance.toFixed(2)}
-              </div>
-            </CardContent>
-            <CardFooter className="flex justify-between p-2 bg-muted/50">
-              <span className="text-sm text-muted-foreground">Last updated: Today</span>
-              <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </CardFooter>
-          </Card>
-        ))}
-      </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleSubmit} disabled={createAccount.isPending || updateAccount.isPending}>
+              {(createAccount.isPending || updateAccount.isPending) ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {isEditMode ? "Updating..." : "Creating..."}
+                </>
+              ) : (
+                isEditMode ? "Update Account" : "Create Account"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

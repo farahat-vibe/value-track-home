@@ -1,56 +1,49 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { TrendingUp, TrendingDown, Calendar, Plus } from "lucide-react";
+import { Plus, TrendingUp, TrendingDown, BarChart2 } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export function QuickActions() {
-  const handleAddIncome = () => console.log("Add income clicked");
-  const handleAddExpense = () => console.log("Add expense clicked");
-  const handleCreateBudget = () => console.log("Create budget clicked");
-  const handleNewAccount = () => console.log("New account clicked");
-
   return (
     <Card>
-      <CardHeader className="pb-2">
+      <CardHeader>
         <CardTitle>Quick Actions</CardTitle>
+        <CardDescription>Common tasks</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-4">
-          <Button 
-            className="w-full flex items-center justify-start gap-2"
-            variant="default"
-            onClick={handleAddIncome}
-          >
-            <TrendingUp className="h-4 w-4" />
-            Add Income
-          </Button>
-          
-          <Button 
-            className="w-full flex items-center justify-start gap-2"
-            variant="secondary"
-            onClick={handleAddExpense}
-          >
-            <TrendingDown className="h-4 w-4" />
-            Add Expense
-          </Button>
-
-          <Button 
-            className="w-full flex items-center justify-start gap-2" 
-            variant="outline"
-            onClick={handleCreateBudget}
-          >
-            <Calendar className="h-4 w-4" />
-            Create Budget
-          </Button>
-
-          <Button 
-            className="w-full flex items-center justify-start gap-2" 
-            variant="outline"
-            onClick={handleNewAccount}
-          >
-            <Plus className="h-4 w-4" />
-            New Account
-          </Button>
-        </div>
+      <CardContent className="grid gap-2">
+        <Button asChild variant="outline" className="justify-start" size="lg">
+          <Link to="/income" className="flex items-center">
+            <div className="mr-3 bg-green-100 p-2 rounded-full dark:bg-green-900/20">
+              <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+            </div>
+            <span>Add Income</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="justify-start" size="lg">
+          <Link to="/expenses" className="flex items-center">
+            <div className="mr-3 bg-red-100 p-2 rounded-full dark:bg-red-900/20">
+              <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
+            </div>
+            <span>Add Expense</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="justify-start" size="lg">
+          <Link to="/accounts" className="flex items-center">
+            <div className="mr-3 bg-blue-100 p-2 rounded-full dark:bg-blue-900/20">
+              <Plus className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+            </div>
+            <span>New Account</span>
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="justify-start" size="lg">
+          <Link to="/budgets" className="flex items-center">
+            <div className="mr-3 bg-purple-100 p-2 rounded-full dark:bg-purple-900/20">
+              <BarChart2 className="h-4 w-4 text-purple-600 dark:text-purple-400" />
+            </div>
+            <span>Create Budget</span>
+          </Link>
+        </Button>
       </CardContent>
     </Card>
   );

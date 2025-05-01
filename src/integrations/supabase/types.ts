@@ -9,7 +9,203 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      accounts: {
+        Row: {
+          balance: number
+          created_at: string
+          id: string
+          name: string
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          id?: string
+          name: string
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          id?: string
+          name?: string
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      budgets: {
+        Row: {
+          accounts: string[]
+          amount: number
+          budget_type: string
+          category: string | null
+          created_at: string
+          end_date: string
+          id: string
+          name: string
+          start_date: string
+          subcategory: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accounts: string[]
+          amount: number
+          budget_type: string
+          category?: string | null
+          created_at?: string
+          end_date: string
+          id?: string
+          name: string
+          start_date?: string
+          subcategory?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accounts?: string[]
+          amount?: number
+          budget_type?: string
+          category?: string | null
+          created_at?: string
+          end_date?: string
+          id?: string
+          name?: string
+          start_date?: string
+          subcategory?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean | null
+          message: string
+          related_id: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message: string
+          related_id?: string | null
+          title: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean | null
+          message?: string
+          related_id?: string | null
+          title?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          account_id: string
+          amount: number
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_recurring: boolean | null
+          recurring_end_date: string | null
+          recurring_frequency: string | null
+          subcategory: string | null
+          tags: string[] | null
+          transaction_date: string
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          account_id: string
+          amount: number
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          is_recurring?: boolean | null
+          recurring_end_date?: string | null
+          recurring_frequency?: string | null
+          subcategory?: string | null
+          tags?: string[] | null
+          transaction_date?: string
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          account_id?: string
+          amount?: number
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          is_recurring?: boolean | null
+          recurring_end_date?: string | null
+          recurring_frequency?: string | null
+          subcategory?: string | null
+          tags?: string[] | null
+          transaction_date?: string
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_account_id_fkey"
+            columns: ["account_id"]
+            isOneToOne: false
+            referencedRelation: "accounts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

@@ -1,105 +1,103 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { TrendingUp, TrendingDown } from "lucide-react";
 
-type Transaction = {
-  id: number;
-  description: string;
-  amount: number;
-  type: "income" | "expense";
-  category: string;
-  date: string;
-};
-
-const recentTransactions: Transaction[] = [
-  {
-    id: 1,
-    description: "Salary",
-    amount: 5000,
-    type: "income",
-    category: "Paycheck",
-    date: "Apr 28, 2025",
-  },
-  {
-    id: 2,
-    description: "Grocery Shopping",
-    amount: 120.5,
-    type: "expense",
-    category: "Food",
-    date: "Apr 27, 2025",
-  },
-  {
-    id: 3,
-    description: "Netflix Subscription",
-    amount: 14.99,
-    type: "expense",
-    category: "Entertainment",
-    date: "Apr 25, 2025",
-  },
-  {
-    id: 4,
-    description: "Freelance Work",
-    amount: 750,
-    type: "income",
-    category: "Side Hustle",
-    date: "Apr 24, 2025",
-  },
-  {
-    id: 5,
-    description: "Gas Station",
-    amount: 45.75,
-    type: "expense",
-    category: "Transportation",
-    date: "Apr 22, 2025",
-  },
-];
+import { useState } from "react";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { TrendingDown, TrendingUp, Loader2 } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format } from "date-fns";
+import { useTransactions } from "@/hooks/useTransactions";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 
 export function TransactionsList() {
+  const [activeTab, setActiveTab] = useState("all");
+  
+  // Get transactions from the past 30 days
+  const today = new Date();
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(today.getDate() - 30);
+  
+  const startDate = thirtyDaysAgo.toISOString().split('T')[0];
+  const endDate = today.toISOString().split('T')[0];
+  
+  const { transactions } = useTransactions({
+    start_date: startDate,
+    end_date: endDate
+  });
+
+  const filteredTransactions = transactions.data ? transactions.data
+    .filter(transaction => {
+      if (activeTab === "all") return true;
+      if (activeTab === "income") return transaction.transaction_type === "income";
+      if (activeTab === "expense") return transaction.transaction_type === "expense";
+      return true;
+    })
+    .sort((a, b) => new Date(b.transaction_date).getTime() - new Date(a.transaction_date).getTime())
+    .slice(0, 5) : [];
+
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+      <CardHeader className="pb-2">
         <CardTitle>Recent Transactions</CardTitle>
-        <button className="text-sm text-primary hover:underline">
-          View All
-        </button>
+        <CardDescription>Your activity in the last 30 days</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {recentTransactions.map((transaction) => (
-            <div 
-              key={transaction.id} 
-              className="flex items-center justify-between border-b border-border pb-4 last:border-0 last:pb-0"
-            >
-              <div className="flex items-center">
-                <div className={`h-10 w-10 rounded-full flex items-center justify-center mr-3 ${
-                  transaction.type === "income" ? "bg-accent/20" : "bg-muted"
-                }`}>
-                  {transaction.type === "income" ? (
-                    <TrendingUp className="h-5 w-5 text-accent" />
-                  ) : (
-                    <TrendingDown className="h-5 w-5 text-muted-foreground" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-medium">{transaction.description}</p>
-                  <div className="flex items-center space-x-2">
-                    <p className="text-xs text-muted-foreground">{transaction.date}</p>
-                    <Badge variant="secondary" className="text-xs">
-                      {transaction.category}
-                    </Badge>
+        <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
+          <TabsList className="mb-4 grid w-full grid-cols-3">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="income">Income</TabsTrigger>
+            <TabsTrigger value="expense">Expenses</TabsTrigger>
+          </TabsList>
+          <TabsContent value={activeTab}>
+            {transactions.isLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+              </div>
+            ) : filteredTransactions.length === 0 ? (
+              <div className="py-8 text-center text-muted-foreground">
+                <p>No transactions found.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {filteredTransactions.map((transaction) => (
+                  <div key={transaction.id} className="flex items-center">
+                    <div className={`p-2 rounded-full ${
+                      transaction.transaction_type === "income" 
+                        ? "bg-green-100 dark:bg-green-900/20" 
+                        : "bg-red-100 dark:bg-red-900/20"
+                    }`}>
+                      {transaction.transaction_type === "income" ? (
+                        <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
+                      ) : (
+                        <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
+                      )}
+                    </div>
+                    <div className="ml-4 flex-1">
+                      <div className="font-medium">{transaction.description}</div>
+                      <div className="text-xs text-muted-foreground">
+                        {format(new Date(transaction.transaction_date), "MMM dd, yyyy")} • {transaction.category}
+                      </div>
+                    </div>
+                    <div className={`font-medium ${
+                      transaction.transaction_type === "income"
+                        ? "text-green-600 dark:text-green-400"
+                        : "text-red-600 dark:text-red-400"
+                    }`}>
+                      {transaction.transaction_type === "income" ? "+" : "-"}${Number(transaction.amount).toFixed(2)}
+                    </div>
                   </div>
+                ))}
+
+                <div className="pt-2 text-right">
+                  <Button variant="link" asChild size="sm">
+                    <Link to={activeTab === "income" ? "/income" : activeTab === "expense" ? "/expenses" : "/accounts"}>
+                      View all
+                    </Link>
+                  </Button>
                 </div>
               </div>
-              <p className={`font-medium ${
-                transaction.type === "income" 
-                  ? "text-accent" 
-                  : "text-muted-foreground"
-              }`}>
-                {transaction.type === "income" ? "+" : "-"}${transaction.amount.toFixed(2)}
-              </p>
-            </div>
-          ))}
-        </div>
+            )}
+          </TabsContent>
+        </Tabs>
       </CardContent>
     </Card>
   );
