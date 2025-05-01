@@ -15,6 +15,7 @@ export type NewTransaction = {
   recurring_frequency?: 'daily' | 'weekly' | 'monthly' | 'yearly' | null;
   recurring_end_date?: string | null;
   tags?: string[] | null;
+  user_id: string; // Added user_id field
 };
 
 export const transactionService = {
@@ -67,7 +68,7 @@ export const transactionService = {
   createTransaction: async (transaction: NewTransaction) => {
     const { data, error } = await supabase
       .from('transactions')
-      .insert([transaction])
+      .insert(transaction) // Fixed: passing a single object instead of an array
       .select()
       .single();
     

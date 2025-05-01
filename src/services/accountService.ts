@@ -7,6 +7,7 @@ export type NewAccount = {
   name: string;
   type: 'cash' | 'bank' | 'credit' | 'other';
   balance: number;
+  user_id: string; // Added user_id field
 };
 
 export const accountService = {
@@ -34,7 +35,7 @@ export const accountService = {
   createAccount: async (account: NewAccount) => {
     const { data, error } = await supabase
       .from('accounts')
-      .insert([account])
+      .insert(account) // Fixed: passing a single object instead of an array
       .select()
       .single();
     

@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox as ShadcnCheckbox } from "@/components/ui/checkbox";
 
 interface CheckboxGroupProps {
   value: string[];
@@ -38,21 +38,27 @@ export function CheckboxGroup({
   );
 }
 
-interface CheckboxProps
-  extends React.ComponentPropsWithoutRef<typeof Checkbox> {
+interface CheckboxItemProps {
   value: string;
+  id?: string;
+  label?: string;
+  children?: React.ReactNode;
 }
 
-export function Checkbox({ value, ...props }: CheckboxProps) {
+export function Checkbox({ value, id, children, ...props }: CheckboxItemProps) {
   const { value: groupValue, toggleValue } = React.useContext(
     CheckboxGroupContext
   );
 
   return (
-    <Checkbox
-      checked={groupValue.includes(value)}
-      onCheckedChange={() => toggleValue(value)}
-      {...props}
-    />
+    <div className="flex items-center space-x-2">
+      <ShadcnCheckbox
+        id={id || value}
+        checked={groupValue.includes(value)}
+        onCheckedChange={() => toggleValue(value)}
+        {...props}
+      />
+      {children}
+    </div>
   );
 }

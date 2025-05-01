@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Card,
@@ -423,8 +422,12 @@ const Budgets = () => {
                 <CheckboxGroup value={selectedAccounts} onChange={setSelectedAccounts}>
                   {accounts.data?.map((account) => (
                     <div key={account.id} className="flex items-center space-x-2">
-                      <Checkbox value={account.id} id={`account-${account.id}`} />
-                      <Label htmlFor={`account-${account.id}`}>{account.name}</Label>
+                      <Checkbox 
+                        value={account.id} 
+                        id={`account-${account.id}`}
+                      >
+                        <Label htmlFor={`account-${account.id}`} className="ml-2">{account.name}</Label>
+                      </Checkbox>
                     </div>
                   ))}
                 </CheckboxGroup>

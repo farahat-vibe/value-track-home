@@ -2,6 +2,8 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { transactionService, NewTransaction } from '@/services/transactionService';
+import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useTransactions = (filters?: {
   transaction_type?: 'income' | 'expense';
@@ -12,13 +14,27 @@ export const useTransactions = (filters?: {
 }) => {
   const queryClient = useQueryClient();
 
+  // Get current user ID for creating transactions
+  const getUserId = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user.id;
+  };
+
   const transactions = useQuery({
     queryKey: ['transactions', filters],
     queryFn: () => transactionService.getTransactions(filters),
   });
 
   const createTransaction = useMutation({
-    mutationFn: (transaction: NewTransaction) => transactionService.createTransaction(transaction),
+    mutationFn: async (transactionData: Omit<NewTransaction, 'user_id'>) => {
+      const userId = await getUserId();
+      if (!userId) throw new Error("User not authenticated");
+      
+      return transactionService.createTransaction({
+        ...transactionData,
+        user_id: userId
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
@@ -37,7 +53,7 @@ export const useTransactions = (filters?: {
   });
 
   const updateTransaction = useMutation({
-    mutationFn: ({ id, updates }: { id: string, updates: Partial<NewTransaction> }) => 
+    mutationFn: ({ id, updates }: { id: string, updates: Partial<Omit<NewTransaction, 'user_id'>> }) => 
       transactionService.updateTransaction(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['transactions'] });
@@ -74,6 +90,24 @@ export const useTransactions = (filters?: {
       });
     }
   });
+
+  // Real-time subscription for transactions
+  useEffect(() => {
+    const channel = supabase
+      .channel('transactions-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'transactions' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['transactions'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   return {
     transactions: {

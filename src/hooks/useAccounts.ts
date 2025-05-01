@@ -2,9 +2,17 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/components/ui/use-toast';
 import { accountService, NewAccount } from '@/services/accountService';
+import { useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useAccounts = () => {
   const queryClient = useQueryClient();
+  
+  // Get current user ID for creating accounts
+  const getUserId = async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    return session?.user.id;
+  };
 
   const accounts = useQuery({
     queryKey: ['accounts'],
@@ -12,7 +20,15 @@ export const useAccounts = () => {
   });
 
   const createAccount = useMutation({
-    mutationFn: (account: NewAccount) => accountService.createAccount(account),
+    mutationFn: async (accountData: Omit<NewAccount, 'user_id'>) => {
+      const userId = await getUserId();
+      if (!userId) throw new Error("User not authenticated");
+      
+      return accountService.createAccount({
+        ...accountData,
+        user_id: userId
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
       toast({
@@ -30,7 +46,7 @@ export const useAccounts = () => {
   });
 
   const updateAccount = useMutation({
-    mutationFn: ({ id, updates }: { id: string, updates: Partial<NewAccount> }) => 
+    mutationFn: ({ id, updates }: { id: string, updates: Partial<Omit<NewAccount, 'user_id'>> }) => 
       accountService.updateAccount(id, updates),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['accounts'] });
@@ -65,6 +81,24 @@ export const useAccounts = () => {
       });
     }
   });
+
+  // Real-time subscription for accounts
+  useEffect(() => {
+    const channel = supabase
+      .channel('accounts-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'accounts' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['accounts'] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
 
   return {
     accounts: {
